@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCFunction NBT Formatter</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --success: #22c55e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 12px;
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      background: #1f2937;
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover { background: #374151; }
+
+    .primary {
+      background: var(--accent);
+    }
+
+    .primary:hover {
+      background: var(--accent-hover);
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      min-height: 100px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .checkbox {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MCFunction Formatter</h1>
+    <div class="subtitle">Format Minecraft commands into clean multi-line mcfunction syntax</div>
+
+    <textarea id="inp" placeholder="Paste your command here..."></textarea>
+
+    <div class="controls">
+      <button class="primary" onclick="go()">Format</button>
+      <button onclick="clearAll()">Clear</button>
+      <label class="checkbox">
+        <input type="checkbox" id="trail" checked> Trailing \\
+      </label>
+    </div>
+
+    <div class="topbar">
+      <span>Output</span>
+      <button onclick="copy()" id="copybtn">Copy</button>
+    </div>
+
+    <pre id="out"></pre>
+
+    <div class="footer">Built for Minecraft datapack creators</div>
+  </div>
+
+<script>
+function normalize(raw){return raw.replace(/\n/g,' ').replace(/\s+/g,' ').trim();}
+
+function format(input){
+  let depth=0, lines=[], cur='';
+  for(let i=0;i<input.length;i++){
+    let c=input[i];
+    if(c==='{'||c==='['){
+      lines.push(cur.trim());
+      cur='  '.repeat(depth)+c;
+      depth++;
+    } else if(c==='}'||c===']'){
+      lines.push(cur.trim());
+      depth--;
+      cur='  '.repeat(depth)+c;
+    } else if(c===','){
+      cur+=',';
+      lines.push(cur.trim());
+      cur='  '.repeat(depth);
+    } else {
+      cur+=c;
+    }
+  }
+  if(cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+
+function go(){
+  let input=document.getElementById('inp').value;
+  if(!input.trim()) return;
+  let lines=format(normalize(input));
+  let trail=document.getElementById('trail').checked;
+  let out=lines.map((l,i)=>trail&&i<lines.length-1?l+'\\':l).join('\n');
+  document.getElementById('out').textContent=out;
+}
+
+function copy(){
+  let t=document.getElementById('out').textContent;
+  if(!t) return;
+  navigator.clipboard.writeText(t);
+  let b=document.getElementById('copybtn');
+  b.textContent='Copied!';
+  setTimeout(()=>b.textContent='Copy',1500);
+}
+
+function clearAll(){
+  document.getElementById('inp').value='';
+  document.getElementById('out').textContent='';
+}
+</script>
+</body>
+</html>
