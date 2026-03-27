@@ -1,4 +1,4 @@
-# MCFunction NBT Formatter
+# Command to Function MCFormatter
 
 A simple web-based tool that formats long Minecraft commands (especially NBT data) into clean, readable multi-line `.mcfunction` syntax.
 
