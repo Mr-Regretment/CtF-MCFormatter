@@ -1,68 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCFunction Multi-Tool</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+
+  <style>
+    :root {
+      --bg:#0f172a; --card:#111827; --accent:#3b82f6;
+      --text:#e5e7eb; --muted:#9ca3af; --border:#1f2933;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,sans-serif;
+      background:radial-gradient(circle at top,#1e293b,#020617);
+      color:var(--text);
+      display:flex;justify-content:center;align-items:center;
+      min-height:100vh;padding:2rem;
+    }
+    .container{
+      width:100%;max-width:1000px;background:var(--card);
+      border-radius:16px;padding:2rem;border:1px solid var(--border);
+    }
+    h1{text-align:center;margin-bottom:6px}
+    .subtitle{text-align:center;color:var(--muted);margin-bottom:1rem}
+
+    textarea{
+      width:100%;height:140px;background:#020617;color:white;
+      border:1px solid var(--border);border-radius:10px;padding:10px;
+      font-family:monospace;
+    }
+
+    .tabs{display:flex;gap:8px;margin:10px 0}
+    .tab{padding:6px 10px;border-radius:6px;background:#1f2937;cursor:pointer}
+    .tab.active{background:var(--accent)}
+
+    .controls{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+
+    button{background:#1f2937;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.primary{background:var(--accent)}
+
+    .topbar{display:flex;justify-content:space-between;margin-top:10px}
+
+    pre{background:#020617;border:1px solid var(--border);padding:10px;border-radius:10px;overflow:auto}
+
+    .line{display:flex;gap:10px}
+    .num{color:#64748b;user-select:none;width:30px;text-align:right}
+    .code{flex:1}
+  </style>
 <meta charset="UTF-8">
-<title>MCFunction Multi Tool</title>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCFunction Multi-Tool</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <style>
-body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #0f172a;
-  color: #e2e8f0;
-  font-family: monospace;
-}
-
-.tabs {
-  background: #020617;
-  padding: 10px;
-  flex-shrink: 0;
-}
-
-.container {
-  flex: 1;
-  display: flex;
-  overflow: hidden; /* 🔥 critical */
-}
-
-textarea {
-  width: 50%;
-  height: 100%;
-  background: #020617;
-  color: #e2e8f0;
-  border: none;
-  padding: 10px;
-  resize: none;
-  overflow: auto;
-}
-
-.output {
-  width: 50%;
-  height: 100%;
-  overflow-y: auto; /* 🔥 critical */
-  background: #020617;
-  padding: 10px;
-}
-.line {
-  display:flex;
-}
-.num {
-  width:40px;
-  color:#64748b;
-}
-.code {
-  white-space:pre;
-}
+body { font-family: Arial; background:#0f172a; color:white; margin:0; }
+.container { display:flex; height:100vh; }
+textarea { width:50%; padding:10px; background:#020617; color:#e2e8f0; border:none; resize:none; }
+.output { width:50%; padding:10px; overflow:auto; background:#020617; }
+button { padding:10px; margin:5px; }
+.tabs { display:flex; gap:5px; padding:5px; background:#020617; }
+.line { display:flex; }
+.line-number { width:40px; color:#64748b; user-select:none; }
+.line-content { flex:1; white-space:pre; }
 .error { color:#ef4444; }
+.drop { border:2px dashed #64748b; }
 </style>
 </head>
-
 <body>
-
 <div class="tabs">
 <button onclick="setMode('format')">Format</button>
 <button onclick="setMode('minify')">Minify</button>
@@ -70,177 +78,187 @@ textarea {
 <button onclick="setMode('validate')">Validate</button>
 <button onclick="downloadFile()">Download</button>
 </div>
-
 <div class="container">
-<textarea id="input"></textarea>
+  <h1>MCFunction Multi-Tool</h1>
+  <div class="subtitle">Formatter • Validator • Minifier • Splitter</div>
+
+  <textarea id="inp" placeholder="Paste command..."></textarea>
+
+  <div class="tabs">
+    <div class="tab active" data-mode="format">Format</div>
+    <div class="tab" data-mode="minify">Minify</div>
+    <div class="tab" data-mode="split">Split</div>
+    <div class="tab" data-mode="validate">Validate</div>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="run()">Run</button>
+    <button onclick="clearAll()">Clear</button>
+    <button onclick="copy()">Copy</button>
+  </div>
+
+  <div id="warn" style="color:#f87171;font-size:12px;margin-bottom:6px"></div>
+  <pre id="out"></pre>
+<textarea id="input" placeholder="Paste command or drop .mcfunction here"></textarea>
 <div id="output" class="output"></div>
 </div>
 
 <script>
-let mode = "format";
+let mode = 'format';
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    mode=t.dataset.mode;
+function setMode(m){ mode = m; run(); }
 
-function setMode(m){
-  mode = m;
-  run();
-}
-
-function formatNBT(str){
-  let indent = 0;
-  let out = [];
-  let current = "";
-  let inString = false;
-
-  for(let i=0;i<str.length;i++){
-    let c = str[i];
-
-    if(c === '"' && str[i-1] !== '\\'){
-      inString = !inString;
-    }
-
-    if(!inString && (c === '{' || c === '[')){
-      current += c;
-      out.push(current);
-      indent++;
-      current = "  ".repeat(indent);
-    }
-    else if(!inString && (c === '}' || c === ']')){
-      if(current.trim()) out.push(current);
-      indent--;
-      current = "  ".repeat(indent) + c;
-    }
-    else if(!inString && c === ','){
-      current += c;
-      out.push(current);
-      current = "  ".repeat(indent);
-    }
-    else{
-      current += c;
-    }
+function formatNBT(str, trail=true){
+ let indent=0, out="", inString=false;
+ for(let i=0;i<str.length;i++){
+  let c=str[i];
+  if(c==='"') inString=!inString;
+  if(!inString && (c==='{'||c==='[')){
+    indent++;
+    out+=c+"\\\n"+"  ".repeat(indent);
   }
+});
 
-  if(current.trim()) out.push(current);
-
-  // ADD BACKSLASHES
-  return out.map(line => line + " \\").join("\n");
-}
-
-function minify(str){
-  return str.replace(/\s+/g,'');
-}
-
-function splitCmd(str){
-  return str.split(" ").join("\n");
-}
+function normalize(str){return str.replace(/\s+/g,' ').trim();}
 
 function validate(str){
-  let stack = [];
-  let inString = false;
-
-  for(let i=0;i<str.length;i++){
-    let c = str[i];
-
-    if(c === '"' && str[i-1] !== '\\'){
-      inString = !inString;
+  let stack=[];
+  for(let c of str){
+    if('{['.includes(c)) stack.push(c);
+    if('}]'.includes(c)){
+      let last=stack.pop();
+      if((c=='}'&&last!='{')||(c==']'&&last!='[')) return false;
     }
-
-    if(inString) continue;
-
-    if(c === '{' || c === '['){
-      stack.push({c,i});
-    }
-    if(c === '}' || c === ']'){
-      let last = stack.pop();
-      if(!last){
-        return "Error at " + i;
-      }
-    }
+  else if(!inString && (c==='}'||c===']')){
+    indent--;
+    out+="\\\n"+"  ".repeat(indent)+c;
   }
-
-  if(stack.length){
-    return "Error at " + stack[0].i;
+  else if(!inString && c===','){
+    out+=c+"\\\n"+"  ".repeat(indent);
   }
-
-  return "Valid";
+  return stack.length===0;
+  else out+=c;
+ }
+ return out;
 }
 
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function format(input){
+  let d=0,res=[],cur='',str=false;
+  for(let i=0;i<input.length;i++){
+    let c=input[i];
+    if(c==='"'&&input[i-1]!=='\\'){str=!str}
+    if(!str){
+      if('{['.includes(c)){res.push('  '.repeat(d)+cur.trim());res.push('  '.repeat(d)+c);d++;cur='';continue}
+      if('}]'.includes(c)){res.push('  '.repeat(d)+cur.trim());d--;res.push('  '.repeat(d)+c);cur='';continue}
+      if(c===','){cur+=',';res.push('  '.repeat(d)+cur.trim());cur='';continue}
+    }
+    cur+=c;
+function minify(str){ return str.replace(/\s+/g,''); }
+
+function splitCmd(str){ return str.replace(/\s+/g,'\n'); }
+
+function validate(str){
+ let stack=[];
+ for(let i=0;i<str.length;i++){
+  let c=str[i];
+  if(c==='{'||c==='[') stack.push({c,i});
+  if(c==='}'||c===']'){
+    let last=stack.pop();
+    if(!last) return `Error at ${i}: unexpected ${c}`;
+  }
+  if(cur.trim())res.push('  '.repeat(d)+cur.trim());
+  return res;
+ }
+ if(stack.length) return `Error at ${stack[0].i}: unclosed ${stack[0].c}`;
+ return "Valid";
 }
 
-function highlight(line){
-  line = escapeHTML(line); // 🔥 CRITICAL
+function minify(str){return normalize(str)}
 
-  return line
-    .replace(/"(.*?)"/g,'<span style="color:#22c55e">"$1"</span>')
-    .replace(/(\w+):/g,'<span style="color:#38bdf8">$1</span>:')
-    .replace(/(\d+b?)/g,'<span style="color:#facc15">$1</span>');
+function splitCmd(str){
+  return str.split(' ').map((w,i)=>i===0?w:w).join('\n');
+function highlightNBT(text){
+ return text
+  .replace(/"(.*?)"/g,'<span style="color:#22c55e">"$1"</span>')
+  .replace(/(\w+):/g,'<span style="color:#38bdf8">$1</span>:')
+  .replace(/(\d+b?)/g,'<span style="color:#facc15">$1</span>');
 }
 
-function render(text){
-  let out = document.getElementById("output");
-  out.innerHTML = "";
-
-  let lines = text.split("\n");
-
+function render(lines){
+  let out='';
   lines.forEach((l,i)=>{
-    let row = document.createElement("div");
-    row.className = "line";
-
-    row.innerHTML = `
-      <div class="num">${i+1}</div>
-      <div class="code">${highlight(l)}</div>
-    `;
-
-    out.appendChild(row);
+    out+=`<div class="line"><span class="num">${i+1}</span><span class="code">${l}</span></div>`;
   });
+  document.getElementById('out').innerHTML=out;
+function renderLines(text){
+ let out=document.getElementById('output');
+ out.innerHTML='';
+ let lines=text.split('\n');
+ lines.forEach((l,i)=>{
+  let div=document.createElement('div');
+  div.className='line';
+  div.innerHTML=`<div class="line-number">${i+1}</div><div class="line-content">${highlightNBT(l)}</div>`;
+  out.appendChild(div);
+ });
 }
 
 function run(){
-  let input = document.getElementById("input").value;
-  let result = "";
+  let input=document.getElementById('inp').value;
+  let warn=document.getElementById('warn');
 
-  if(mode === "format") result = formatNBT(input);
-  if(mode === "minify") result = minify(input);
-  if(mode === "split") result = splitCmd(input);
-  if(mode === "validate") result = validate(input);
+  if(mode==='validate'){
+    warn.textContent = validate(input) ? '✔ Valid structure' : '⚠ Invalid structure';
+    document.getElementById('out').innerHTML='';
+    return;
+  }
 
-  render(result);
+  if(!validate(input)) warn.textContent='⚠ Invalid structure'; else warn.textContent='';
+
+  if(mode==='format') render(format(normalize(input)));
+  if(mode==='minify') render([minify(input)]);
+  if(mode==='split') render(splitCmd(input).split('\n'));
+ let input=document.getElementById('input').value;
+ let result="";
+ if(mode==='format') result=formatNBT(input);
+ if(mode==='minify') result=minify(input);
+ if(mode==='split') result=splitCmd(input);
+ if(mode==='validate') result=validate(input);
+ renderLines(result);
 }
 
+function copy(){
+  let text=[...document.querySelectorAll('.code')].map(e=>e.textContent).join('\n');
+  navigator.clipboard.writeText(text);
 function downloadFile(){
-  let text = document.getElementById("output").innerText;
-  let blob = new Blob([text], {type:"text/plain"});
-  let a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "output.mcfunction";
-  a.click();
+ let text=document.getElementById('output').innerText;
+ let blob=new Blob([text],{type:'text/plain'});
+ let a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='output.mcfunction';
+ a.click();
 }
 
-// drag + drop
-let inputEl = document.getElementById("input");
-
-inputEl.addEventListener("dragover", e => e.preventDefault());
-
-inputEl.addEventListener("drop", e => {
-  e.preventDefault();
-  let file = e.dataTransfer.files[0];
-  let reader = new FileReader();
-
-  reader.onload = () => {
-    inputEl.value = reader.result;
-    run();
-  };
-
-  reader.readAsText(file);
+function clearAll(){
+  document.getElementById('inp').value='';
+  document.getElementById('out').innerHTML='';
+  document.getElementById('warn').textContent='';
+}
+// drag & drop
+document.getElementById('input').addEventListener('dragover',e=>{e.preventDefault();});
+document.getElementById('input').addEventListener('drop',e=>{
+ e.preventDefault();
+ let file=e.dataTransfer.files[0];
+ let reader=new FileReader();
+ reader.onload=()=>{ document.getElementById('input').value=reader.result; run(); };
+ reader.readAsText(file);
 });
 
 // auto run
-inputEl.addEventListener("input", run);
-
+document.getElementById('input').addEventListener('input',run);
 </script>
-
 </body>
 </html>
