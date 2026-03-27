@@ -1,23 +1,55 @@
-# Command to Function MCFormatter
+# Command to Function – MCFunction Multi-Tool
 
-A simple web-based tool that formats long Minecraft commands (especially NBT data) into clean, readable multi-line `.mcfunction` syntax.
+A fast, no-nonsense web tool for transforming messy Minecraft commands into clean, usable `.mcfunction` code.
 
-What it does
+Built for people who are tired of unreadable NBT.
 
-* Takes messy, single-line Minecraft commands
-* Splits and indents NBT structures (`{}` and `[]`)
-* Outputs clean, readable formatting
-* Optional trailing `\` for multi-line commands
+---
 
-Who it's for
+## 🚀 What it does
 
-This tool is built for:
+This tool helps you take long, ugly commands and actually work with them.
 
-* Minecraft **datapack creators**
+### Features
+
+* **Formatter**
+
+  * Converts single-line commands into structured, indented output
+  * Handles nested `{}` and `[]` cleanly
+  * Makes NBT readable
+
+* **Validator**
+
+  * Checks for broken brackets (`{}`, `[]`)
+  * Quickly catches malformed structures
+
+* **Minifier**
+
+  * Compresses commands into compact one-liners
+  * Useful for commands or storage
+
+* **Command Splitter**
+
+  * Breaks commands into readable segments
+  * Great for debugging or teaching
+
+* **Line Numbers**
+
+  * Makes debugging `.mcfunction` files easier
+  * Quickly reference exact lines
+
+---
+
+## 🎯 Who it's for
+
+* Minecraft datapack creators
 * Command block users
-* Anyone working with **NBT-heavy commands**
+* Modders working with NBT
+* Anyone dealing with long commands
 
-Example
+---
+
+## 📌 Example
 
 ### Input
 
@@ -25,35 +57,73 @@ Example
 /summon zombie ~ ~ ~ {CustomName:"Bob",HandItems:[{id:"minecraft:diamond_sword",Count:1b},{}]}
 ```
 
-### Output
+### Output (Formatted)
 
 ```
-/summon zombie ~ ~ ~ \
-{\
-  CustomName:"Bob",\
-  HandItems:[\
-    {\
-      id:"minecraft:diamond_sword",\
-      Count:1b\
-    },\
-    {}\
-  ]\
+/summon zombie ~ ~ ~
+{
+  CustomName:"Bob",
+  HandItems:[
+    {
+      id:"minecraft:diamond_sword",
+      Count:1b
+    },
+    {}
+  ]
 }
 ```
 
-Usage
-
-1. Paste your command into the input box
-2. Click **Format**
-3. Copy the output into your `.mcfunction` file
-
-Notes
-
-* Formatting is structural, not semantic (it doesn’t validate commands)
-* Works best with properly formatted NBT input
 ---
 
-Live Website
-```
+## ⚙️ Usage
+
+1. Paste your command into the input box
+2. Select a mode:
+
+   * Format
+   * Minify
+   * Split
+   * Validate
+3. Click **Run**
+4. Copy the result
+
+---
+
+## ⚠️ Notes
+
+* Formatting is **structural**, not semantic
+* It does not validate full Minecraft command syntax
+* Best results come from valid NBT input
+
+---
+
+## 🌐 Live Site
+
 https://mr-regretment.github.io/CtF-MCFormatter/
-```
+
+---
+
+## 💡 Why this exists
+
+Minecraft commands get out of hand fast—especially with NBT.
+
+This tool exists to:
+
+* Make them readable
+* Make them editable
+* Make them usable in real projects
+
+---
+
+## 🔧 Future Ideas
+
+* NBT syntax highlighting (true parser)
+* Error pinpointing (line-level)
+* Function file export (multi-command)
+* Drag & drop `.mcfunction` support
+
+---
+
+## 📄 License
+
+Free to use. No nonsense.
