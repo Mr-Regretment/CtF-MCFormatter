@@ -55,5 +55,5 @@ Notes
 
 Live Website
 ```
-https://YOUR-USERNAME.github.io/mcfunction-formatter/
+https://mr-regretment.github.io/CtF-MCFormatter/
 ```
