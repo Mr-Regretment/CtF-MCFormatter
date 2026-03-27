@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MCFunction NBT Formatter</title>
-  <link rel="icon" href="data:,">
+
+  <!-- Prism.js -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+
   <style>
     :root {
       --bg: #0f172a;
@@ -14,7 +18,6 @@
       --text: #e5e7eb;
       --muted: #9ca3af;
       --border: #1f2933;
-      --success: #22c55e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -136,6 +139,8 @@
     <div class="controls">
       <button class="primary" onclick="go()">Format</button>
       <button onclick="clearAll()">Clear</button>
+      <button onclick="loadExample()">Example</button>
+      <button onclick="downloadFile()">Download</button>
       <label class="checkbox">
         <input type="checkbox" id="trail" checked> Trailing \\
       </label>
@@ -146,60 +151,158 @@
       <button onclick="copy()" id="copybtn">Copy</button>
     </div>
 
-    <pre id="out"></pre>
+    <div id="warn" style="color:#f87171;font-size:12px;margin-bottom:6px;"></div>
+    <pre><code id="out" class="language-json"></code></pre>
 
     <div class="footer">Built for Minecraft datapack creators</div>
   </div>
 
 <script>
-function normalize(raw){return raw.replace(/\n/g,' ').replace(/\s+/g,' ').trim();}
+function normalize(raw){
+  return raw.replace(/\n/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function isValidNBT(str){
+  let stack=[];
+  for(let c of str){
+    if(c==='{'||c==='[') stack.push(c);
+    if(c==='}') if(stack.pop()!=='{') return false;
+    if(c===']') if(stack.pop()!=='[') return false;
+  }
+  return stack.length===0;
+}
 
 function format(input){
-  let depth=0, lines=[], cur='';
-  for(let i=0;i<input.length;i++){
-    let c=input[i];
-    if(c==='{'||c==='['){
-      lines.push(cur.trim());
-      cur='  '.repeat(depth)+c;
-      depth++;
-    } else if(c==='}'||c===']'){
-      lines.push(cur.trim());
-      depth--;
-      cur='  '.repeat(depth)+c;
-    } else if(c===','){
-      cur+=',';
-      lines.push(cur.trim());
-      cur='  '.repeat(depth);
-    } else {
-      cur+=c;
+  let depth = 0;
+  let lines = [];
+  let cur = '';
+  let inString = false;
+
+  for (let i = 0; i < input.length; i++) {
+    let c = input[i];
+
+    if (c === '"' && input[i - 1] !== '\\') {
+      inString = !inString;
+      cur += c;
+      continue;
     }
+
+    if (!inString) {
+      if (c === '{' || c === '[') {
+        if (cur.trim()) lines.push('  '.repeat(depth) + cur.trim());
+        lines.push('  '.repeat(depth) + c);
+        depth++;
+        cur = '';
+        continue;
+      }
+
+      if (c === '}' || c === ']') {
+        if (cur.trim()) lines.push('  '.repeat(depth) + cur.trim());
+        depth--;
+        lines.push('  '.repeat(depth) + c);
+        cur = '';
+        continue;
+      }
+
+      if (c === ',') {
+        cur += ',';
+        lines.push('  '.repeat(depth) + cur.trim());
+        cur = '';
+        continue;
+      }
+    }
+
+    cur += c;
   }
-  if(cur.trim()) lines.push(cur.trim());
+
+  if (cur.trim()) lines.push('  '.repeat(depth) + cur.trim());
   return lines;
 }
 
 function go(){
   let input=document.getElementById('inp').value;
   if(!input.trim()) return;
+
+  let warn = document.getElementById('warn');
+  if(!isValidNBT(input)){
+    warn.textContent = '⚠ Invalid NBT structure detected';
+  } else {
+    warn.textContent = '';
+  }
+
   let lines=format(normalize(input));
   let trail=document.getElementById('trail').checked;
-  let out=lines.map((l,i)=>trail&&i<lines.length-1?l+'\\':l).join('\n');
-  document.getElementById('out').textContent=out;
+
+  let out=lines.map((l,i)=>
+    trail && i < lines.length-1 ? l+'\\' : l
+  ).join('\n');
+
+  let outEl=document.getElementById('out');
+  outEl.textContent=out;
+
+  Prism.highlightAll();
 }
 
 function copy(){
   let t=document.getElementById('out').textContent;
   if(!t) return;
+
   navigator.clipboard.writeText(t);
+
   let b=document.getElementById('copybtn');
-  b.textContent='Copied!';
-  setTimeout(()=>b.textContent='Copy',1500);
+  b.textContent='✔ Copied';
+  b.style.background='#22c55e';
+
+  setTimeout(()=>{
+    b.textContent='Copy';
+    b.style.background='';
+  },1500);
 }
 
 function clearAll(){
   document.getElementById('inp').value='';
   document.getElementById('out').textContent='';
+  document.getElementById('warn').textContent='';
 }
+
+function loadExample(){
+  const ex='/data merge entity @s {abilities:{mayfly:1b,flying:1b},CustomName:"{\\"text\\":\\"Test\\"}"}';
+  document.getElementById('inp').value=ex;
+  go();
+}
+
+function downloadFile(){
+  const content = document.getElementById('out').textContent;
+  if(!content) return;
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'formatted.mcfunction';
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const trailBox = document.getElementById('trail');
+
+  trailBox.checked = localStorage.getItem('trail') === 'true';
+
+  trailBox.addEventListener('change', () => {
+    localStorage.setItem('trail', trailBox.checked);
+  });
+
+  document.getElementById('inp').addEventListener('paste', () =>
+    setTimeout(go, 50)
+  );
+
+  document.getElementById('inp').addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') go();
+  });
+});
 </script>
 </body>
 </html>
