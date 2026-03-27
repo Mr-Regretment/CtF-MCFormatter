@@ -6,7 +6,7 @@ Built for people who are tired of unreadable NBT.
 
 ---
 
-## 🚀 What it does
+What it does
 
 This tool helps you take long, ugly commands and actually work with them.
 
@@ -40,16 +40,7 @@ This tool helps you take long, ugly commands and actually work with them.
 
 ---
 
-## 🎯 Who it's for
-
-* Minecraft datapack creators
-* Command block users
-* Modders working with NBT
-* Anyone dealing with long commands
-
----
-
-## 📌 Example
+## Example
 
 ### Input
 
@@ -89,7 +80,7 @@ This tool helps you take long, ugly commands and actually work with them.
 
 ---
 
-## ⚠️ Notes
+## Notes
 
 * Formatting is **structural**, not semantic
 * It does not validate full Minecraft command syntax
@@ -97,25 +88,13 @@ This tool helps you take long, ugly commands and actually work with them.
 
 ---
 
-## 🌐 Live Site
+## Live Site
 
 https://mr-regretment.github.io/CtF-MCFormatter/
 
 ---
 
-## 💡 Why this exists
-
-Minecraft commands get out of hand fast—especially with NBT.
-
-This tool exists to:
-
-* Make them readable
-* Make them editable
-* Make them usable in real projects
-
----
-
-## 🔧 Future Ideas
+Future Ideas
 
 * NBT syntax highlighting (true parser)
 * Error pinpointing (line-level)
@@ -124,6 +103,6 @@ This tool exists to:
 
 ---
 
-## 📄 License
+License
 
 Free to use. No nonsense.
