@@ -253,12 +253,19 @@ function minify(str){ return normalize(str); }
 function splitCmd(str){ return str.split(" "); }
 
 function render(lines){
-  let out="";
-  lines.forEach((l,i)=>{
-    out+=`<div class="line"><span class="num">${i+1}</span><span class="code">${l.replace(/\/g, "\\")}</span></div>`;
+  let out = "";
+  lines.forEach((l, i) => {
+    let safe = l.replace(/\\/g, "\\\\"); // show backslashes properly
+    out += `
+      <div class="line">
+        <span class="num">${i + 1}</span>
+        <span class="code">${safe}</span>
+      </div>
+    `;
   });
   document.getElementById("out").innerHTML = out;
 }
+
 
 function run(){
   let input=document.getElementById("inp").value;
