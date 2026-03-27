@@ -204,20 +204,49 @@ function validate(str){
 }
 
 function format(input){
-  let d=0,res=[],cur="",str=false;
-  for(let i=0;i<input.length;i++){
-    let c=input[i];
-    if(c==='"' && input[i-1] !== "\\") str=!str;
-    if(!str){
-      if("{[".includes(c)){ res.push("  ".repeat(d)+cur.trim()); res.push("  ".repeat(d)+c); d++; cur=""; continue; }
-      if("}]".includes(c)){ res.push("  ".repeat(d)+cur.trim()); d--; res.push("  ".repeat(d)+c); cur=""; continue; }
-      if(c===","){ cur+=","; res.push("  ".repeat(d)+cur.trim()); cur=""; continue; }
+  let d = 0, res = [], cur = "", str = false;
+
+  for (let i = 0; i < input.length; i++) {
+    let c = input[i];
+
+    if (c === '"' && input[i - 1] !== "\\") str = !str;
+
+    if (!str) {
+      if ("{[".includes(c)) {
+        if (cur.trim()) res.push("  ".repeat(d) + cur.trim() + " \\");
+        res.push("  ".repeat(d) + c + " \\");
+        d++;
+        cur = "";
+        continue;
+      }
+      if ("}]".includes(c)) {
+        if (cur.trim()) res.push("  ".repeat(d) + cur.trim() + " \\");
+        d--;
+        res.push("  ".repeat(d) + c + " \\");
+        cur = "";
+        continue;
+      }
+      if (c === ",") {
+        cur += ",";
+        res.push("  ".repeat(d) + cur.trim() + " \\");
+        cur = "";
+        continue;
+      }
     }
-    cur+=c;
+
+    cur += c;
   }
-  if(cur.trim()) res.push("  ".repeat(d)+cur.trim());
+
+  if (cur.trim()) res.push("  ".repeat(d) + cur.trim());
+
+  // Remove trailing slash from final line
+  if (res.length > 0 && res[res.length - 1].endsWith("\\")) {
+    res[res.length - 1] = res[res.length - 1].slice(0, -2);
+  }
+
   return res;
 }
+
 
 function minify(str){ return normalize(str); }
 
