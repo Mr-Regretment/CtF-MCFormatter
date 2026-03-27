@@ -255,7 +255,7 @@ function splitCmd(str){ return str.split(" "); }
 function render(lines){
   let out="";
   lines.forEach((l,i)=>{
-    out+=`<div class="line"><span class="num">${i+1}</span><span class="code">${l}</span></div>`;
+    out+=`<div class="line"><span class="num">${i+1}</span><span class="code">${l.replace(/\/g, "\\")}</span></div>`;
   });
   document.getElementById("out").innerHTML = out;
 }
