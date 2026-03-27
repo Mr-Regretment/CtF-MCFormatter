@@ -3,59 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MCFunction Multi-Tool</title>
+  <title>MCFunction Multi‑Tool</title>
 
   <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
 
   <style>
     :root {
-      --bg:#0f172a; --card:#111827; --accent:#3b82f6;
-      --text:#e5e7eb; --muted:#9ca3af; --border:#1f2933;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:Inter,system-ui,sans-serif;
-      background:radial-gradient(circle at top,#1e293b,#020617);
-      color:var(--text);
-      display:flex;justify-content:center;align-items:center;
-      min-height:100vh;padding:2rem;
-    }
-    .container{
-      width:100%;max-width:900px;background:var(--card);
-      border-radius:16px;padding:2rem;border:1px solid var(--border);
-    }
-    h1{text-align:center;margin-bottom:6px}
-    .subtitle{text-align:center;color:var(--muted);margin-bottom:1rem}
-
-    textarea{
-      width:100%;height:140px;background:#020617;color:white;
-      border:1px solid var(--border);border-radius:10px;padding:10px;
-      font-family:monospace;
+      --bg:#0f172a;
+      --card:#1e293b;
+      --accent:#3b82f6;
+      --accent-hover:#2563eb;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --border:#334155;
     }
 
-    .tabs{display:flex;gap:8px;margin:10px 0}
-    .tab{padding:6px 10px;border-radius:6px;background:#1f2937;cursor:pointer}
-    .tab.active{background:var(--accent)}
+    * { box-sizing:border-box; margin:0; padding:0; }
 
-    .controls{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
 
-    button{background:#1f2937;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
-    button.primary{background:var(--accent)}
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 32px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
 
-    #warn{color:#f87171;font-size:12px;margin-bottom:6px}
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
 
-    pre{background:#020617;border:1px solid var(--border);padding:10px;border-radius:10px;overflow:auto}
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-size: 15px;
+    }
 
-    .line{display:flex;gap:10px}
-    .num{color:#64748b;user-select:none;width:30px;text-align:right}
-    .code{flex:1;white-space:pre}
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 14px;
+      resize: none;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 8px 14px;
+      background: #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.15s;
+    }
+
+    .tab.active {
+      background: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #334155;
+      color: var(--text);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.15s;
+    }
+
+    button.primary {
+      background: var(--accent);
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    #warn {
+      color: #f87171;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    pre {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 350px;
+    }
+
+    .line {
+      display: flex;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .num {
+      width: 32px;
+      text-align: right;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .code {
+      flex: 1;
+      white-space: pre;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>MCFunction Multi-Tool</h1>
+<div class="card">
+  <h1>MCFunction Multi‑Tool</h1>
   <div class="subtitle">Formatter • Validator • Minifier • Splitter</div>
 
   <textarea id="inp" placeholder="Paste command or drop .mcfunction here"></textarea>
@@ -100,7 +195,7 @@ function validate(str){
     if(c==="}"||c==="]"){
       let last=stack.pop();
       if(!last) return `Error at ${i}: unexpected ${c}`;
-      if((c==="}" && last.c!=="{") || (c==="]" && last.c!=="["))
+      if((c==="}" && last.c!=="{") || (c==="]" && last.c!=="[`"))
         return `Error at ${i}: mismatched ${c}`;
     }
   }
