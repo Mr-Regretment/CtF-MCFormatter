@@ -99,11 +99,11 @@
       overflow: auto;
       max-height: 350px;
       white-space: pre;
+      font-family: monospace;
+      font-size: 14px;
     }
 
     .line {
-      font-family: monospace;
-      font-size: 14px;
       white-space: pre;
     }
   </style>
@@ -163,7 +163,6 @@ function format(input){
 
   if (cur.trim()) res.push("  ".repeat(d) + cur.trim());
 
-  // Remove trailing slash from final line
   if (res.length > 0 && res[res.length - 1].endsWith("\\")) {
     res[res.length - 1] = res[res.length - 1].slice(0, -2);
   }
@@ -174,7 +173,7 @@ function format(input){
 function render(lines){
   let out = "";
   lines.forEach(l => {
-    let display = l.replace(/\\/g, "\\\\"); // show \\ but copy/download = \
+    let display = l.replace(/\\/g, "\\\\"); 
     out += '<div class="line">' + display + '</div>';
   });
   document.getElementById("out").innerHTML = out;
@@ -187,7 +186,7 @@ function run(){
 
 function copy(){
   let text = [...document.querySelectorAll(".line")]
-    .map(e => e.textContent.replace(/\\\\/g, "\\")) // \\ → \
+    .map(e => e.textContent.replace(/\\\\/g, "\\")) 
     .join("\n");
 
   navigator.clipboard.writeText(text);
@@ -195,7 +194,7 @@ function copy(){
 
 function downloadFile(){
   let text = [...document.querySelectorAll(".line")]
-    .map(e => e.textContent.replace(/\\\\/g, "\\")) // \\ → \
+    .map(e => e.textContent.replace(/\\\\/g, "\\")) 
     .join("\n");
 
   let blob = new Blob([text], {type:"text/plain"});
