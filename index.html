@@ -7,22 +7,45 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
 
 <style>
-body { margin:0; font-family:monospace; background:#0f172a; color:#e2e8f0; }
-.tabs { padding:10px; background:#020617; }
-button { margin-right:5px; }
-.container { display:flex; height:90vh; }
-textarea {
-  width:50%;
-  background:#020617;
-  color:#e2e8f0;
-  border:none;
-  padding:10px;
-  resize:none;
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: monospace;
 }
+
+.tabs {
+  background: #020617;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* 🔥 critical */
+}
+
+textarea {
+  width: 50%;
+  height: 100%;
+  background: #020617;
+  color: #e2e8f0;
+  border: none;
+  padding: 10px;
+  resize: none;
+  overflow: auto;
+}
+
 .output {
-  width:50%;
-  overflow:auto;
-  padding:10px;
+  width: 50%;
+  height: 100%;
+  overflow-y: auto; /* 🔥 critical */
+  background: #020617;
+  padding: 10px;
 }
 .line {
   display:flex;
