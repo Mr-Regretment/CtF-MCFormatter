@@ -162,35 +162,40 @@ function format(input){
   for (let i = 0; i < input.length; i++) {
     let c = input[i];
 
+    // Opening bracket
     if (c === '{' || c === '[') {
-      if (cur.trim()) lines.push("  ".repeat(depth) + cur.trim());
+      if (cur.trim()) lines.push("  ".repeat(depth + 1) + cur.trim());
       lines.push("  ".repeat(depth) + c);
       depth++;
       cur = "";
     }
 
+    // Closing bracket
     else if (c === '}' || c === ']') {
-      if (cur.trim()) lines.push("  ".repeat(depth) + cur.trim());
+      if (cur.trim()) lines.push("  ".repeat(depth + 1) + cur.trim());
       depth--;
       lines.push("  ".repeat(depth) + c);
       cur = "";
     }
 
+    // Comma ends a line
     else if (c === ',') {
       cur += ',';
-      lines.push("  ".repeat(depth) + cur.trim());
+      lines.push("  ".repeat(depth + 1) + cur.trim());
       cur = "";
     }
 
+    // Normal characters
     else {
       cur += c;
     }
   }
 
-  if (cur.trim()) lines.push("  ".repeat(depth) + cur.trim());
+  if (cur.trim()) lines.push("  ".repeat(depth + 1) + cur.trim());
 
   return lines;
 }
+
 
 
 
