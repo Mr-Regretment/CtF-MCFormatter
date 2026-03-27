@@ -195,7 +195,7 @@ function validate(str){
     if(c==="}"||c==="]"){
       let last=stack.pop();
       if(!last) return `Error at ${i}: unexpected ${c}`;
-      if((c==="}" && last.c!=="{") || (c==="]" && last.c!=="[`"))
+      if((c==="}" && last.c!=="{") || (c==="]" && last.c!=="[")) 
         return `Error at ${i}: mismatched ${c}`;
     }
   }
@@ -247,25 +247,23 @@ function format(input){
   return res;
 }
 
-
 function minify(str){ return normalize(str); }
 
 function splitCmd(str){ return str.split(" "); }
 
 function render(lines){
-  let out = "";
-  lines.forEach((l, i) => {
-    let safe = l.replace(/\\/g, "\\\\"); // show backslashes properly
-    out += `
+  let out="";
+  lines.forEach((l,i)=>{
+    let safe = l.replace(/\\/g, "\\\\"); // <-- FIX: show backslashes
+    out+=`
       <div class="line">
-        <span class="num">${i + 1}</span>
+        <span class="num">${i+1}</span>
         <span class="code">${safe}</span>
       </div>
     `;
   });
   document.getElementById("out").innerHTML = out;
 }
-
 
 function run(){
   let input=document.getElementById("inp").value;
@@ -281,7 +279,7 @@ function run(){
   let v = validate(input);
   warn.textContent = v === "Valid" ? "" : v;
 
-  if(mode==="format") render(format(normalize(input)));
+  if(mode==="format") render(format(input)); // <-- no normalize()
   if(mode==="minify") render([minify(input)]);
   if(mode==="split") render(splitCmd(input));
 }
