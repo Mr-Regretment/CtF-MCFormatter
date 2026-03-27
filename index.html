@@ -163,7 +163,16 @@ function validate(str){
   return "Valid";
 }
 
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function highlight(line){
+  line = escapeHTML(line); // 🔥 CRITICAL
+
   return line
     .replace(/"(.*?)"/g,'<span style="color:#22c55e">"$1"</span>')
     .replace(/(\w+):/g,'<span style="color:#38bdf8">$1</span>:')
